@@ -10,6 +10,7 @@ resources:
     - repository: azure-sdk-build-tools
       type: git
       name: internal/azure-sdk-build-tools
+      ref: refs/heads/publish-to-blobfeed
 
 trigger:
   branches:
@@ -41,3 +42,7 @@ stages:
     Artifacts:
     - name: Azure.Template
       safeName: AzureTemplate
+      options:
+        skipTagRepository: true
+        skipPublishPackage: true
+        skipPublishDocs: true
