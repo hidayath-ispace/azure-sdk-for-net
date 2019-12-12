@@ -120,7 +120,7 @@ namespace Azure.Messaging.EventHubs.Tests
         ///
         /// <value>The namespace connection string is based on the dynamic Event Hubs scope.</value>
         ///
-        public static string BuildConnectionStringForEventHub(string eventHubName) => $"{ EventHubsConnectionString };EntityPath={eventHubName}";
+        public static string BuildConnectionStringForEventHub(string eventHubName) => $"{ EventHubsConnectionString };EntityPath={ eventHubName }";
 
         /// <summary>
         ///   Reads an environment variable, ensuring that it is populated.

@@ -14,7 +14,7 @@ namespace Microsoft.Azure.Management.Network.Models
     using System.Linq;
 
     /// <summary>
-    /// Describes the connection monitor test configuration.
+    /// Describes a connection monitor test configuration.
     /// </summary>
     public partial class ConnectionMonitorTestConfiguration
     {
@@ -33,19 +33,22 @@ namespace Microsoft.Azure.Management.Network.Models
         /// </summary>
         /// <param name="name">The name of the connection monitor test
         /// configuration.</param>
-        /// <param name="testFrequencySec">Test frequency in seconds.</param>
-        /// <param name="protocol">The protocol. Possible values include:
-        /// 'Tcp', 'Http', 'Icmp'</param>
-        /// <param name="preferredIPVersion">The preferred IP version. Possible
-        /// values include: 'IPv4', 'IPv6'</param>
-        /// <param name="httpConfiguration">Describes the HTTP
-        /// configuration.</param>
-        /// <param name="tcpConfiguration">Describes the TCP
-        /// configuration.</param>
-        /// <param name="icmpConfiguration">Describes the ICMP
-        /// configuration.</param>
-        /// <param name="successThreshold">Describes the success
-        /// threshold.</param>
+        /// <param name="testFrequencySec">The frequency of test evaluation, in
+        /// seconds.</param>
+        /// <param name="protocol">The protocol to use in test evaluation.
+        /// Possible values include: 'Tcp', 'Http', 'Icmp'</param>
+        /// <param name="preferredIPVersion">The preferred IP version to use in
+        /// test evaluation. The connection monitor may choose to use a
+        /// different version depending on other parameters. Possible values
+        /// include: 'IPv4', 'IPv6'</param>
+        /// <param name="httpConfiguration">The parameters used to perform test
+        /// evaluation over HTTP.</param>
+        /// <param name="tcpConfiguration">The parameters used to perform test
+        /// evaluation over TCP.</param>
+        /// <param name="icmpConfiguration">The parameters used to perform test
+        /// evaluation over ICMP.</param>
+        /// <param name="successThreshold">The threshold for declaring a test
+        /// successful.</param>
         public ConnectionMonitorTestConfiguration(string name = default(string), int? testFrequencySec = default(int?), string protocol = default(string), string preferredIPVersion = default(string), ConnectionMonitorHttpConfiguration httpConfiguration = default(ConnectionMonitorHttpConfiguration), ConnectionMonitorTcpConfiguration tcpConfiguration = default(ConnectionMonitorTcpConfiguration), ConnectionMonitorIcmpConfiguration icmpConfiguration = default(ConnectionMonitorIcmpConfiguration), ConnectionMonitorSuccessThreshold successThreshold = default(ConnectionMonitorSuccessThreshold))
         {
             Name = name;
@@ -71,45 +74,50 @@ namespace Microsoft.Azure.Management.Network.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets test frequency in seconds.
+        /// Gets or sets the frequency of test evaluation, in seconds.
         /// </summary>
         [JsonProperty(PropertyName = "testFrequencySec")]
         public int? TestFrequencySec { get; set; }
 
         /// <summary>
-        /// Gets or sets the protocol. Possible values include: 'Tcp', 'Http',
-        /// 'Icmp'
+        /// Gets or sets the protocol to use in test evaluation. Possible
+        /// values include: 'Tcp', 'Http', 'Icmp'
         /// </summary>
         [JsonProperty(PropertyName = "protocol")]
         public string Protocol { get; set; }
 
         /// <summary>
-        /// Gets or sets the preferred IP version. Possible values include:
-        /// 'IPv4', 'IPv6'
+        /// Gets or sets the preferred IP version to use in test evaluation.
+        /// The connection monitor may choose to use a different version
+        /// depending on other parameters. Possible values include: 'IPv4',
+        /// 'IPv6'
         /// </summary>
         [JsonProperty(PropertyName = "preferredIPVersion")]
         public string PreferredIPVersion { get; set; }
 
         /// <summary>
-        /// Gets or sets describes the HTTP configuration.
+        /// Gets or sets the parameters used to perform test evaluation over
+        /// HTTP.
         /// </summary>
         [JsonProperty(PropertyName = "httpConfiguration")]
         public ConnectionMonitorHttpConfiguration HttpConfiguration { get; set; }
 
         /// <summary>
-        /// Gets or sets describes the TCP configuration.
+        /// Gets or sets the parameters used to perform test evaluation over
+        /// TCP.
         /// </summary>
         [JsonProperty(PropertyName = "tcpConfiguration")]
         public ConnectionMonitorTcpConfiguration TcpConfiguration { get; set; }
 
         /// <summary>
-        /// Gets or sets describes the ICMP configuration.
+        /// Gets or sets the parameters used to perform test evaluation over
+        /// ICMP.
         /// </summary>
         [JsonProperty(PropertyName = "icmpConfiguration")]
         public ConnectionMonitorIcmpConfiguration IcmpConfiguration { get; set; }
 
         /// <summary>
-        /// Gets or sets describes the success threshold.
+        /// Gets or sets the threshold for declaring a test successful.
         /// </summary>
         [JsonProperty(PropertyName = "successThreshold")]
         public ConnectionMonitorSuccessThreshold SuccessThreshold { get; set; }

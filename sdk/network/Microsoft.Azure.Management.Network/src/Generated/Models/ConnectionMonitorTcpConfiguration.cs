@@ -31,9 +31,9 @@ namespace Microsoft.Azure.Management.Network.Models
         /// Initializes a new instance of the ConnectionMonitorTcpConfiguration
         /// class.
         /// </summary>
-        /// <param name="port">The port.</param>
-        /// <param name="disableTraceRoute">Value indicating whether trace
-        /// route should be disabled.</param>
+        /// <param name="port">The port to connect to.</param>
+        /// <param name="disableTraceRoute">Value indicating whether path
+        /// evaluation with trace route should be disabled.</param>
         public ConnectionMonitorTcpConfiguration(int? port = default(int?), bool? disableTraceRoute = default(bool?))
         {
             Port = port;
@@ -47,14 +47,14 @@ namespace Microsoft.Azure.Management.Network.Models
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets the port.
+        /// Gets or sets the port to connect to.
         /// </summary>
         [JsonProperty(PropertyName = "port")]
         public int? Port { get; set; }
 
         /// <summary>
-        /// Gets or sets value indicating whether trace route should be
-        /// disabled.
+        /// Gets or sets value indicating whether path evaluation with trace
+        /// route should be disabled.
         /// </summary>
         [JsonProperty(PropertyName = "disableTraceRoute")]
         public bool? DisableTraceRoute { get; set; }

@@ -35,10 +35,10 @@ namespace Microsoft.Azure.Management.Network.Models
         /// group.</param>
         /// <param name="disable">Value indicating whether test group is
         /// disabled.</param>
-        /// <param name="testConfigurations">A list of test configuration
+        /// <param name="testConfigurations">List of test configuration
         /// names.</param>
-        /// <param name="sources">A list of source endpoint names.</param>
-        /// <param name="destinations">A list of destination endpoint
+        /// <param name="sources">List of source endpoint names.</param>
+        /// <param name="destinations">List of destination endpoint
         /// names.</param>
         public ConnectionMonitorTestGroup(string name = default(string), bool? disable = default(bool?), IList<string> testConfigurations = default(IList<string>), IList<string> sources = default(IList<string>), IList<string> destinations = default(IList<string>))
         {
@@ -68,19 +68,19 @@ namespace Microsoft.Azure.Management.Network.Models
         public bool? Disable { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of test configuration names.
+        /// Gets or sets list of test configuration names.
         /// </summary>
         [JsonProperty(PropertyName = "testConfigurations")]
         public IList<string> TestConfigurations { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of source endpoint names.
+        /// Gets or sets list of source endpoint names.
         /// </summary>
         [JsonProperty(PropertyName = "sources")]
         public IList<string> Sources { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of destination endpoint names.
+        /// Gets or sets list of destination endpoint names.
         /// </summary>
         [JsonProperty(PropertyName = "destinations")]
         public IList<string> Destinations { get; set; }

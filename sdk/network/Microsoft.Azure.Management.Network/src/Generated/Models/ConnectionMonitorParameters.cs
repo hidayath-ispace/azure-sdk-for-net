@@ -48,7 +48,9 @@ namespace Microsoft.Azure.Management.Network.Models
         /// <param name="testGroups">List of connection monitor test
         /// groups.</param>
         /// <param name="outputs">List of connection monitor outputs.</param>
-        public ConnectionMonitorParameters(ConnectionMonitorSource source = default(ConnectionMonitorSource), ConnectionMonitorDestination destination = default(ConnectionMonitorDestination), bool? autoStart = default(bool?), int? monitoringIntervalInSeconds = default(int?), IList<ConnectionMonitorEndpoint> endpoints = default(IList<ConnectionMonitorEndpoint>), IList<ConnectionMonitorTestConfiguration> testConfigurations = default(IList<ConnectionMonitorTestConfiguration>), IList<ConnectionMonitorTestGroup> testGroups = default(IList<ConnectionMonitorTestGroup>), IList<ConnectionMonitorOutput> outputs = default(IList<ConnectionMonitorOutput>))
+        /// <param name="notes">Optional notes to be associated with the
+        /// connection monitor.</param>
+        public ConnectionMonitorParameters(ConnectionMonitorSource source = default(ConnectionMonitorSource), ConnectionMonitorDestination destination = default(ConnectionMonitorDestination), bool? autoStart = default(bool?), int? monitoringIntervalInSeconds = default(int?), IList<ConnectionMonitorEndpoint> endpoints = default(IList<ConnectionMonitorEndpoint>), IList<ConnectionMonitorTestConfiguration> testConfigurations = default(IList<ConnectionMonitorTestConfiguration>), IList<ConnectionMonitorTestGroup> testGroups = default(IList<ConnectionMonitorTestGroup>), IList<ConnectionMonitorOutput> outputs = default(IList<ConnectionMonitorOutput>), string notes = default(string))
         {
             Source = source;
             Destination = destination;
@@ -58,6 +60,7 @@ namespace Microsoft.Azure.Management.Network.Models
             TestConfigurations = testConfigurations;
             TestGroups = testGroups;
             Outputs = outputs;
+            Notes = notes;
             CustomInit();
         }
 
@@ -114,6 +117,13 @@ namespace Microsoft.Azure.Management.Network.Models
         /// </summary>
         [JsonProperty(PropertyName = "outputs")]
         public IList<ConnectionMonitorOutput> Outputs { get; set; }
+
+        /// <summary>
+        /// Gets or sets optional notes to be associated with the connection
+        /// monitor.
+        /// </summary>
+        [JsonProperty(PropertyName = "notes")]
+        public string Notes { get; set; }
 
         /// <summary>
         /// Validate the object.

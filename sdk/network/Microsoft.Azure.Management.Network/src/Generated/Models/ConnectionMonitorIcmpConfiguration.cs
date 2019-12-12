@@ -31,8 +31,8 @@ namespace Microsoft.Azure.Management.Network.Models
         /// Initializes a new instance of the
         /// ConnectionMonitorIcmpConfiguration class.
         /// </summary>
-        /// <param name="disableTraceRoute">Value indicating whether trace
-        /// route should be disabled.</param>
+        /// <param name="disableTraceRoute">Value indicating whether path
+        /// evaluation with trace route should be disabled.</param>
         public ConnectionMonitorIcmpConfiguration(bool? disableTraceRoute = default(bool?))
         {
             DisableTraceRoute = disableTraceRoute;
@@ -45,8 +45,8 @@ namespace Microsoft.Azure.Management.Network.Models
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets value indicating whether trace route should be
-        /// disabled.
+        /// Gets or sets value indicating whether path evaluation with trace
+        /// route should be disabled.
         /// </summary>
         [JsonProperty(PropertyName = "disableTraceRoute")]
         public bool? DisableTraceRoute { get; set; }

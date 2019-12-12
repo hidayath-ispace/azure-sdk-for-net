@@ -35,9 +35,9 @@ namespace Microsoft.Azure.Management.Network.Models
         /// endpoint.</param>
         /// <param name="address">Address of the connection monitor endpoint
         /// (IP or domain name).</param>
-        /// <param name="filter">Describes the connection monitor
-        /// filter.</param>
-        public ConnectionMonitorEndpoint(string name = default(string), string resourceId = default(string), string address = default(string), ConnectionMonitorFilter filter = default(ConnectionMonitorFilter))
+        /// <param name="filter">Filter for sub-items within the
+        /// endpoint.</param>
+        public ConnectionMonitorEndpoint(string name = default(string), string resourceId = default(string), string address = default(string), ConnectionMonitorEndpointFilter filter = default(ConnectionMonitorEndpointFilter))
         {
             Name = name;
             ResourceId = resourceId;
@@ -71,10 +71,10 @@ namespace Microsoft.Azure.Management.Network.Models
         public string Address { get; set; }
 
         /// <summary>
-        /// Gets or sets describes the connection monitor filter.
+        /// Gets or sets filter for sub-items within the endpoint.
         /// </summary>
         [JsonProperty(PropertyName = "filter")]
-        public ConnectionMonitorFilter Filter { get; set; }
+        public ConnectionMonitorEndpointFilter Filter { get; set; }
 
     }
 }

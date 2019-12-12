@@ -57,6 +57,8 @@ namespace Microsoft.Azure.Management.Network.Models
         /// <param name="testGroups">List of connection monitor test
         /// groups.</param>
         /// <param name="outputs">List of connection monitor outputs.</param>
+        /// <param name="notes">Optional notes to be associated with the
+        /// connection monitor.</param>
         /// <param name="provisioningState">The provisioning state of the
         /// connection monitor. Possible values include: 'Succeeded',
         /// 'Updating', 'Deleting', 'Failed'</param>
@@ -64,7 +66,7 @@ namespace Microsoft.Azure.Management.Network.Models
         /// monitor was started.</param>
         /// <param name="monitoringStatus">The monitoring status of the
         /// connection monitor.</param>
-        public ConnectionMonitorResult(string name = default(string), string id = default(string), string etag = default(string), string type = default(string), string location = default(string), IDictionary<string, string> tags = default(IDictionary<string, string>), ConnectionMonitorSource source = default(ConnectionMonitorSource), ConnectionMonitorDestination destination = default(ConnectionMonitorDestination), bool? autoStart = default(bool?), int? monitoringIntervalInSeconds = default(int?), IList<ConnectionMonitorEndpoint> endpoints = default(IList<ConnectionMonitorEndpoint>), IList<ConnectionMonitorTestConfiguration> testConfigurations = default(IList<ConnectionMonitorTestConfiguration>), IList<ConnectionMonitorTestGroup> testGroups = default(IList<ConnectionMonitorTestGroup>), IList<ConnectionMonitorOutput> outputs = default(IList<ConnectionMonitorOutput>), string provisioningState = default(string), System.DateTime? startTime = default(System.DateTime?), string monitoringStatus = default(string))
+        public ConnectionMonitorResult(string name = default(string), string id = default(string), string etag = default(string), string type = default(string), string location = default(string), IDictionary<string, string> tags = default(IDictionary<string, string>), ConnectionMonitorSource source = default(ConnectionMonitorSource), ConnectionMonitorDestination destination = default(ConnectionMonitorDestination), bool? autoStart = default(bool?), int? monitoringIntervalInSeconds = default(int?), IList<ConnectionMonitorEndpoint> endpoints = default(IList<ConnectionMonitorEndpoint>), IList<ConnectionMonitorTestConfiguration> testConfigurations = default(IList<ConnectionMonitorTestConfiguration>), IList<ConnectionMonitorTestGroup> testGroups = default(IList<ConnectionMonitorTestGroup>), IList<ConnectionMonitorOutput> outputs = default(IList<ConnectionMonitorOutput>), string notes = default(string), string provisioningState = default(string), System.DateTime? startTime = default(System.DateTime?), string monitoringStatus = default(string))
         {
             Name = name;
             Id = id;
@@ -80,6 +82,7 @@ namespace Microsoft.Azure.Management.Network.Models
             TestConfigurations = testConfigurations;
             TestGroups = testGroups;
             Outputs = outputs;
+            Notes = notes;
             ProvisioningState = provisioningState;
             StartTime = startTime;
             MonitoringStatus = monitoringStatus;
@@ -176,6 +179,13 @@ namespace Microsoft.Azure.Management.Network.Models
         /// </summary>
         [JsonProperty(PropertyName = "properties.outputs")]
         public IList<ConnectionMonitorOutput> Outputs { get; set; }
+
+        /// <summary>
+        /// Gets or sets optional notes to be associated with the connection
+        /// monitor.
+        /// </summary>
+        [JsonProperty(PropertyName = "properties.notes")]
+        public string Notes { get; set; }
 
         /// <summary>
         /// Gets the provisioning state of the connection monitor. Possible

@@ -14,7 +14,7 @@ namespace Microsoft.Azure.Management.Network.Models
     using System.Linq;
 
     /// <summary>
-    /// Describes the connection monitor output.
+    /// Describes a connection monitor output destination.
     /// </summary>
     public partial class ConnectionMonitorOutput
     {
@@ -29,10 +29,11 @@ namespace Microsoft.Azure.Management.Network.Models
         /// <summary>
         /// Initializes a new instance of the ConnectionMonitorOutput class.
         /// </summary>
-        /// <param name="type">Connection monitor output type. Possible values
-        /// include: 'Workspace'</param>
-        /// <param name="workspaceSettings">Describes the connection monitor
-        /// workspace settings.</param>
+        /// <param name="type">Connection monitor output destination type.
+        /// Currently, only "Workspace" is supported. Possible values include:
+        /// 'Workspace'</param>
+        /// <param name="workspaceSettings">Describes the settings for
+        /// producing output into a log analytics workspace.</param>
         public ConnectionMonitorOutput(string type = default(string), ConnectionMonitorWorkspaceSettings workspaceSettings = default(ConnectionMonitorWorkspaceSettings))
         {
             Type = type;
@@ -46,14 +47,15 @@ namespace Microsoft.Azure.Management.Network.Models
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets connection monitor output type. Possible values
-        /// include: 'Workspace'
+        /// Gets or sets connection monitor output destination type. Currently,
+        /// only "Workspace" is supported. Possible values include: 'Workspace'
         /// </summary>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
 
         /// <summary>
-        /// Gets or sets describes the connection monitor workspace settings.
+        /// Gets or sets describes the settings for producing output into a log
+        /// analytics workspace.
         /// </summary>
         [JsonProperty(PropertyName = "workspaceSettings")]
         public ConnectionMonitorWorkspaceSettings WorkspaceSettings { get; set; }

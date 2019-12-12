@@ -14,7 +14,7 @@ namespace Microsoft.Azure.Management.Network.Models
     using System.Linq;
 
     /// <summary>
-    /// Describes the sucess threshold.
+    /// Describes the threshold for declaring a test successful.
     /// </summary>
     public partial class ConnectionMonitorSuccessThreshold
     {
@@ -31,14 +31,15 @@ namespace Microsoft.Azure.Management.Network.Models
         /// Initializes a new instance of the ConnectionMonitorSuccessThreshold
         /// class.
         /// </summary>
-        /// <param name="checksFailedPercent">The percentage of failed
-        /// checks.</param>
-        /// <param name="disableTraceRoute">Value indicating whether trace
-        /// route should be disabled.</param>
-        public ConnectionMonitorSuccessThreshold(int? checksFailedPercent = default(int?), bool? disableTraceRoute = default(bool?))
+        /// <param name="checksFailedPercent">The maximum percentage of failed
+        /// checks permitted for a test to evaluate as successful.</param>
+        /// <param name="roundTripTimeMs">The maximum round-trip time in
+        /// milliseconds permitted for a test to evaluate as
+        /// successful.</param>
+        public ConnectionMonitorSuccessThreshold(int? checksFailedPercent = default(int?), int? roundTripTimeMs = default(int?))
         {
             ChecksFailedPercent = checksFailedPercent;
-            DisableTraceRoute = disableTraceRoute;
+            RoundTripTimeMs = roundTripTimeMs;
             CustomInit();
         }
 
@@ -48,17 +49,18 @@ namespace Microsoft.Azure.Management.Network.Models
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets the percentage of failed checks.
+        /// Gets or sets the maximum percentage of failed checks permitted for
+        /// a test to evaluate as successful.
         /// </summary>
         [JsonProperty(PropertyName = "checksFailedPercent")]
         public int? ChecksFailedPercent { get; set; }
 
         /// <summary>
-        /// Gets or sets value indicating whether trace route should be
-        /// disabled.
+        /// Gets or sets the maximum round-trip time in milliseconds permitted
+        /// for a test to evaluate as successful.
         /// </summary>
-        [JsonProperty(PropertyName = "disableTraceRoute")]
-        public bool? DisableTraceRoute { get; set; }
+        [JsonProperty(PropertyName = "roundTripTimeMs")]
+        public int? RoundTripTimeMs { get; set; }
 
     }
 }

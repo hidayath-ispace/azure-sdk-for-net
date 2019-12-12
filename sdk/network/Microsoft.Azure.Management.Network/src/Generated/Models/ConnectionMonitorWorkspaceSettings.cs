@@ -14,7 +14,8 @@ namespace Microsoft.Azure.Management.Network.Models
     using System.Linq;
 
     /// <summary>
-    /// Describes the connection monitor workspace settings.
+    /// Describes the settings for producing output into a log analytics
+    /// workspace.
     /// </summary>
     public partial class ConnectionMonitorWorkspaceSettings
     {

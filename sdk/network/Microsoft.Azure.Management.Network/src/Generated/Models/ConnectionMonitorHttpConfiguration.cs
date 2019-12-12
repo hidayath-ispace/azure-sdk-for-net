@@ -33,15 +33,18 @@ namespace Microsoft.Azure.Management.Network.Models
         /// Initializes a new instance of the
         /// ConnectionMonitorHttpConfiguration class.
         /// </summary>
-        /// <param name="port">The port.</param>
-        /// <param name="method">HTTP method. Possible values include: 'Get',
-        /// 'Post'</param>
-        /// <param name="path">The path.</param>
-        /// <param name="requestHeaders">List of HTTP headers.</param>
-        /// <param name="validStatusCodeRanges">A list of valid status code
-        /// ranges.</param>
+        /// <param name="port">The port to connect to.</param>
+        /// <param name="method">The HTTP method to use. Possible values
+        /// include: 'Get', 'Post'</param>
+        /// <param name="path">The path component of the URI. For instance,
+        /// "/dir1/dir2".</param>
+        /// <param name="requestHeaders">The HTTP headers to transmit with the
+        /// request.</param>
+        /// <param name="validStatusCodeRanges">HTTP status codes to consider
+        /// successful. For instance, "2xx,301-304,418".</param>
         /// <param name="preferHTTPS">Value indicating whether HTTPS is
-        /// preferred over HTTP.</param>
+        /// preferred over HTTP in cases where the choice is not
+        /// explicit.</param>
         public ConnectionMonitorHttpConfiguration(int? port = default(int?), string method = default(string), string path = default(string), IList<HTTPHeader> requestHeaders = default(IList<HTTPHeader>), IList<string> validStatusCodeRanges = default(IList<string>), bool? preferHTTPS = default(bool?))
         {
             Port = port;
@@ -59,37 +62,41 @@ namespace Microsoft.Azure.Management.Network.Models
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets the port.
+        /// Gets or sets the port to connect to.
         /// </summary>
         [JsonProperty(PropertyName = "port")]
         public int? Port { get; set; }
 
         /// <summary>
-        /// Gets or sets HTTP method. Possible values include: 'Get', 'Post'
+        /// Gets or sets the HTTP method to use. Possible values include:
+        /// 'Get', 'Post'
         /// </summary>
         [JsonProperty(PropertyName = "method")]
         public string Method { get; set; }
 
         /// <summary>
-        /// Gets or sets the path.
+        /// Gets or sets the path component of the URI. For instance,
+        /// "/dir1/dir2".
         /// </summary>
         [JsonProperty(PropertyName = "path")]
         public string Path { get; set; }
 
         /// <summary>
-        /// Gets or sets list of HTTP headers.
+        /// Gets or sets the HTTP headers to transmit with the request.
         /// </summary>
         [JsonProperty(PropertyName = "requestHeaders")]
         public IList<HTTPHeader> RequestHeaders { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of valid status code ranges.
+        /// Gets or sets HTTP status codes to consider successful. For
+        /// instance, "2xx,301-304,418".
         /// </summary>
         [JsonProperty(PropertyName = "validStatusCodeRanges")]
         public IList<string> ValidStatusCodeRanges { get; set; }
 
         /// <summary>
-        /// Gets or sets value indicating whether HTTPS is preferred over HTTP.
+        /// Gets or sets value indicating whether HTTPS is preferred over HTTP
+        /// in cases where the choice is not explicit.
         /// </summary>
         [JsonProperty(PropertyName = "preferHTTPS")]
         public bool? PreferHTTPS { get; set; }

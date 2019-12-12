@@ -38,7 +38,8 @@ namespace Microsoft.Azure.Management.Network.Models
         /// <param name="privateIPAddress">The Firewall Internal Load Balancer
         /// IP to be used as the next hop in User Defined Routes.</param>
         /// <param name="subnet">Reference to the subnet resource. This
-        /// resource must be named 'AzureFirewallSubnet'.</param>
+        /// resource must be named 'AzureFirewallSubnet' or
+        /// 'AzureFirewallManagementSubnet'.</param>
         /// <param name="publicIPAddress">Reference to the PublicIP resource.
         /// This field is a mandatory input if subnet is not null.</param>
         /// <param name="provisioningState">The provisioning state of the Azure
@@ -49,7 +50,8 @@ namespace Microsoft.Azure.Management.Network.Models
         /// resource.</param>
         /// <param name="etag">A unique read-only string that changes whenever
         /// the resource is updated.</param>
-        public AzureFirewallIPConfiguration(string id = default(string), string privateIPAddress = default(string), SubResource subnet = default(SubResource), SubResource publicIPAddress = default(SubResource), string provisioningState = default(string), string name = default(string), string etag = default(string))
+        /// <param name="type">Type of the resource.</param>
+        public AzureFirewallIPConfiguration(string id = default(string), string privateIPAddress = default(string), SubResource subnet = default(SubResource), SubResource publicIPAddress = default(SubResource), string provisioningState = default(string), string name = default(string), string etag = default(string), string type = default(string))
             : base(id)
         {
             PrivateIPAddress = privateIPAddress;
@@ -58,6 +60,7 @@ namespace Microsoft.Azure.Management.Network.Models
             ProvisioningState = provisioningState;
             Name = name;
             Etag = etag;
+            Type = type;
             CustomInit();
         }
 
@@ -75,7 +78,7 @@ namespace Microsoft.Azure.Management.Network.Models
 
         /// <summary>
         /// Gets or sets reference to the subnet resource. This resource must
-        /// be named 'AzureFirewallSubnet'.
+        /// be named 'AzureFirewallSubnet' or 'AzureFirewallManagementSubnet'.
         /// </summary>
         [JsonProperty(PropertyName = "properties.subnet")]
         public SubResource Subnet { get; set; }
@@ -108,6 +111,12 @@ namespace Microsoft.Azure.Management.Network.Models
         /// </summary>
         [JsonProperty(PropertyName = "etag")]
         public string Etag { get; private set; }
+
+        /// <summary>
+        /// Gets type of the resource.
+        /// </summary>
+        [JsonProperty(PropertyName = "type")]
+        public string Type { get; private set; }
 
     }
 }

@@ -47,7 +47,7 @@ namespace Azure.Storage.Files.DataLake.Samples
             #endregion Snippet:SampleSnippetDataLakeFileClient_Create
 
             // Verify we created one file
-            Assert.AreEqual(1, filesystem.ListPaths().Count());
+            Assert.AreEqual(1, filesystem.GetPaths().Count());
 
             // Cleanup
             filesystem.Delete();
@@ -85,7 +85,7 @@ namespace Azure.Storage.Files.DataLake.Samples
             #endregion Snippet:SampleSnippetDataLakeFileClient_Create_Directory
 
             // Verify we created one file
-            Assert.AreEqual(1, filesystem.ListPaths().Count());
+            Assert.AreEqual(1, filesystem.GetPaths().Count());
 
             // Cleanup
             filesystem.Delete();
@@ -118,7 +118,7 @@ namespace Azure.Storage.Files.DataLake.Samples
             #endregion Snippet:SampleSnippetDataLakeDirectoryClient_Create
 
             // Verify we created one directory
-            Assert.AreEqual(1, filesystem.ListPaths().Count());
+            Assert.AreEqual(1, filesystem.GetPaths().Count());
 
             // Cleanup
             filesystem.Delete();
@@ -203,7 +203,7 @@ namespace Azure.Storage.Files.DataLake.Samples
                 file.Create();
 
                 // Verify we created one file
-                Assert.AreEqual(1, filesystem.ListPaths().Count());
+                Assert.AreEqual(1, filesystem.GetPaths().Count());
 
                 // Append data to the DataLake File
                 file.Append(File.OpenRead(sampleFileContentPart1), 0);
@@ -303,7 +303,7 @@ namespace Azure.Storage.Files.DataLake.Samples
                 // List all the directories
                 List<string> names = new List<string>();
                 #region Snippet:SampleSnippetDataLakeFileClient_List
-                foreach (PathItem pathItem in filesystem.ListPaths())
+                foreach (PathItem pathItem in filesystem.GetPaths())
                 {
                     names.Add(pathItem.Name);
                 }
@@ -365,7 +365,7 @@ namespace Azure.Storage.Files.DataLake.Samples
 
                 // Keep track of all the names we encounter
                 List<string> names = new List<string>();
-                foreach (PathItem pathItem in filesystem.ListPaths(recursive: true))
+                foreach (PathItem pathItem in filesystem.GetPaths(recursive: true))
                 {
                     names.Add(pathItem.Name);
                 }
@@ -414,7 +414,7 @@ namespace Azure.Storage.Files.DataLake.Samples
                 filesystem.Create();
             }
             catch (RequestFailedException ex)
-                when (ex.ErrorCode == Constants.DataLake.AlreadyExists)
+                when (ex.ErrorCode == "ContainerAlreadyExists")
             {
                 // Ignore any errors if the filesystem already exists
             }
@@ -454,14 +454,16 @@ namespace Azure.Storage.Files.DataLake.Samples
                 fileClient.Create();
 
                 // Set the Permissions of the file
-                fileClient.SetPermissions(permissions: "rwxrwxrwx");
+                PathPermissions pathPermissions = PathPermissions.ParseSymbolicPermissions("rwxrwxrwx");
+                fileClient.SetPermissions(permissions: pathPermissions);
                 #endregion Snippet:SampleSnippetDataLakeFileClient_SetPermissions
 
                 // Get Access Control List
                 PathAccessControl accessControlResponse = fileClient.GetAccessControl();
 
                 // Check Access Control permissions
-                Assert.AreEqual("rwxrwxrwx", accessControlResponse.Permissions);
+                Assert.AreEqual(pathPermissions.ToSymbolicPermissions(), accessControlResponse.Permissions.ToSymbolicPermissions());
+                Assert.AreEqual(pathPermissions.ToOctalPermissions(), accessControlResponse.Permissions.ToOctalPermissions());
             }
             finally
             {
@@ -496,7 +498,9 @@ namespace Azure.Storage.Files.DataLake.Samples
                 fileClient.Create();
 
                 // Set Access Control List
-                fileClient.SetAccessControl("user::rwx,group::r--,mask::rwx,other::---");
+                IList<PathAccessControlItem> accessControlList
+                    = PathAccessControlExtensions.ParseAccessControlList("user::rwx,group::r--,mask::rwx,other::---");
+                fileClient.SetAccessControlList(accessControlList);
                 #endregion Snippet:SampleSnippetDataLakeFileClient_SetAcls
                 #region Snippet:SampleSnippetDataLakeFileClient_GetAcls
                 // Get Access Control List
@@ -504,7 +508,9 @@ namespace Azure.Storage.Files.DataLake.Samples
                 #endregion Snippet:SampleSnippetDataLakeFileClient_GetAcls
 
                 // Check Access Control permissions
-                Assert.AreEqual("user::rwx,group::r--,mask::rwx,other::---", accessControlResponse.Acl);
+                Assert.AreEqual(
+                    PathAccessControlExtensions.ToAccessControlListString(accessControlList),
+                    PathAccessControlExtensions.ToAccessControlListString(accessControlResponse.AccessControlList.ToList()));
             }
             finally
             {

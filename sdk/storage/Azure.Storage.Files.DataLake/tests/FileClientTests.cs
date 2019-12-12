@@ -30,14 +30,15 @@ namespace Azure.Storage.Files.DataLake.Tests
         public async Task Ctor_Uri()
         {
             string fileSystemName = GetNewFileSystemName();
-            using (GetNewFileSystem(out DataLakeFileSystemClient fileSystem, fileSystemName: fileSystemName))
+            string directoryName = GetNewDirectoryName();
+            string fileName = GetNewFileName();
+            using (GetNewDirectory(out DataLakeDirectoryClient directory, fileSystemName: fileSystemName, directoryName: directoryName))
             {
                 // Arrange
-                string fileName = GetNewFileName();
-                await fileSystem.CreateFileAsync(fileName);
+                await directory.CreateFileAsync(fileName);
 
                 SasQueryParameters sasQueryParameters = GetNewAccountSasCredentials();
-                Uri uri = new Uri($"{TestConfigHierarchicalNamespace.BlobServiceEndpoint}/{fileSystemName}/{fileName}?{sasQueryParameters}");
+                Uri uri = new Uri($"{TestConfigHierarchicalNamespace.BlobServiceEndpoint}/{fileSystemName}/{directoryName}/{fileName}?{sasQueryParameters}");
                 DataLakeFileClient fileClient = InstrumentClient(new DataLakeFileClient(uri, GetOptions()));
 
                 // Act
@@ -46,6 +47,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                 // Assert
                 Assert.AreEqual(fileName, fileClient.Name);
                 Assert.AreEqual(fileSystemName, fileClient.FileSystemName);
+                Assert.AreEqual($"{directoryName}/{fileName}", fileClient.Path);
                 Assert.AreEqual(uri, fileClient.Uri);
             }
         }
@@ -54,16 +56,17 @@ namespace Azure.Storage.Files.DataLake.Tests
         public async Task Ctor_SharedKey()
         {
             string fileSystemName = GetNewFileSystemName();
-            using (GetNewFileSystem(out DataLakeFileSystemClient fileSystem, fileSystemName: fileSystemName))
+            string directoryName = GetNewDirectoryName();
+            string fileName = GetNewFileName();
+            using (GetNewDirectory(out DataLakeDirectoryClient directory, fileSystemName: fileSystemName, directoryName: directoryName))
             {
                 // Arrange
-                string fileName = GetNewFileName();
-                await fileSystem.CreateFileAsync(fileName);
+                await directory.CreateFileAsync(fileName);
 
                 StorageSharedKeyCredential sharedKey = new StorageSharedKeyCredential(
                     TestConfigHierarchicalNamespace.AccountName,
                     TestConfigHierarchicalNamespace.AccountKey);
-                Uri uri = new Uri($"{TestConfigHierarchicalNamespace.BlobServiceEndpoint}/{fileSystemName}/{fileName}");
+                Uri uri = new Uri($"{TestConfigHierarchicalNamespace.BlobServiceEndpoint}/{fileSystemName}/{directoryName}/{fileName}");
                 DataLakeFileClient fileClient = InstrumentClient(new DataLakeFileClient(uri, sharedKey, GetOptions()));
 
                 // Act
@@ -72,6 +75,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                 // Assert
                 Assert.AreEqual(fileName, fileClient.Name);
                 Assert.AreEqual(fileSystemName, fileClient.FileSystemName);
+                Assert.AreEqual($"{directoryName}/{fileName}", fileClient.Path);
                 Assert.AreEqual(uri, fileClient.Uri);
             }
         }
@@ -80,14 +84,15 @@ namespace Azure.Storage.Files.DataLake.Tests
         public async Task Ctor_TokenCredential()
         {
             string fileSystemName = GetNewFileSystemName();
-            using (GetNewFileSystem(out DataLakeFileSystemClient fileSystem, fileSystemName: fileSystemName))
+            string directoryName = GetNewDirectoryName();
+            string fileName = GetNewFileName();
+            using (GetNewDirectory(out DataLakeDirectoryClient directory, fileSystemName: fileSystemName, directoryName: directoryName))
             {
                 // Arrange
-                string fileName = GetNewFileName();
-                await fileSystem.CreateFileAsync(fileName);
+                await directory.CreateFileAsync(fileName);
 
                 TokenCredential tokenCredential = GetOAuthCredential(TestConfigHierarchicalNamespace);
-                Uri uri = new Uri($"{TestConfigHierarchicalNamespace.BlobServiceEndpoint}/{fileSystemName}/{fileName}").ToHttps();
+                Uri uri = new Uri($"{TestConfigHierarchicalNamespace.BlobServiceEndpoint}/{fileSystemName}/{directoryName}/{fileName}").ToHttps();
                 DataLakeFileClient fileClient = InstrumentClient(new DataLakeFileClient(uri, tokenCredential, GetOptions()));
 
                 // Act
@@ -96,6 +101,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                 // Assert
                 Assert.AreEqual(fileName, fileClient.Name);
                 Assert.AreEqual(fileSystemName, fileClient.FileSystemName);
+                Assert.AreEqual($"{directoryName}/{fileName}", fileClient.Path);
                 Assert.AreEqual(uri, fileClient.Uri);
             }
         }
@@ -194,7 +200,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
                 // Assert
                 Response<PathAccessControl> response = await file.GetAccessControlAsync();
-                Assert.AreEqual("rwx-w----", response.Value.Permissions);
+                AssertPathPermissionsEquality(PathPermissions.ParseSymbolicPermissions("rwx-w----"), response.Value.Permissions);
             }
         }
 
@@ -485,7 +491,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                 Assert.IsNotNull(accessControl.Owner);
                 Assert.IsNotNull(accessControl.Group);
                 Assert.IsNotNull(accessControl.Permissions);
-                Assert.IsNotNull(accessControl.Acl);
+                Assert.IsNotNull(accessControl.AccessControlList);
             }
         }
 
@@ -512,7 +518,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                 Assert.IsNotNull(accessControl.Owner);
                 Assert.IsNotNull(accessControl.Group);
                 Assert.IsNotNull(accessControl.Permissions);
-                Assert.IsNotNull(accessControl.Acl);
+                Assert.IsNotNull(accessControl.AccessControlList);
             }
         }
 
@@ -541,7 +547,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                 Assert.IsNotNull(accessControl.Owner);
                 Assert.IsNotNull(accessControl.Group);
                 Assert.IsNotNull(accessControl.Permissions);
-                Assert.IsNotNull(accessControl.Acl);
+                Assert.IsNotNull(accessControl.AccessControlList);
             }
         }
 
@@ -576,7 +582,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                 Assert.IsNotNull(accessControl.Owner);
                 Assert.IsNotNull(accessControl.Group);
                 Assert.IsNotNull(accessControl.Permissions);
-                Assert.IsNotNull(accessControl.Acl);
+                Assert.IsNotNull(accessControl.AccessControlList);
             }
         }
 
@@ -606,7 +612,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                 Assert.IsNotNull(accessControl.Owner);
                 Assert.IsNotNull(accessControl.Group);
                 Assert.IsNotNull(accessControl.Permissions);
-                Assert.IsNotNull(accessControl.Acl);
+                Assert.IsNotNull(accessControl.AccessControlList);
             }
         }
 
@@ -642,7 +648,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                 Assert.IsNotNull(accessControl.Owner);
                 Assert.IsNotNull(accessControl.Group);
                 Assert.IsNotNull(accessControl.Permissions);
-                Assert.IsNotNull(accessControl.Acl);
+                Assert.IsNotNull(accessControl.AccessControlList);
             }
         }
 
@@ -733,26 +739,10 @@ namespace Azure.Storage.Files.DataLake.Tests
             using (GetNewFile(out DataLakeFileClient fileClient))
             {
                 // Act
-                Response<PathInfo> response = await fileClient.SetAccessControlAsync(acl: AccessControl);
+                Response<PathInfo> response = await fileClient.SetAccessControlListAsync(AccessControlList);
 
                 // Assert
                 AssertValidStoragePathInfo(response);
-            }
-        }
-
-        [Test]
-        public async Task SetAccessControlAsync_Error()
-        {
-            using (GetNewFile(out DataLakeFileClient fileClient))
-            {
-                // Act
-                await TestHelper.AssertExpectedExceptionAsync<RequestFailedException>(
-                    fileClient.SetAccessControlAsync(acl: "asdf"),
-                    e =>
-                    {
-                        Assert.AreEqual("InvaldAccessControlList", e.ErrorCode);
-                        Assert.AreEqual("The access control list value is invalid.", e.Message.Split('\n')[0]);
-                    });
             }
         }
 
@@ -774,8 +764,8 @@ namespace Azure.Storage.Files.DataLake.Tests
                         lease: true);
 
                     // Act
-                    Response<PathInfo> response = await file.SetAccessControlAsync(
-                        acl: AccessControl,
+                    Response<PathInfo> response = await file.SetAccessControlListAsync(
+                        accessControlList: AccessControlList,
                         conditions: conditions);
 
                     // Assert
@@ -800,8 +790,8 @@ namespace Azure.Storage.Files.DataLake.Tests
 
                     // Act
                     await TestHelper.AssertExpectedExceptionAsync<RequestFailedException>(
-                        file.SetAccessControlAsync(
-                            acl: AccessControl,
+                        file.SetAccessControlListAsync(
+                            accessControlList: AccessControlList,
                             conditions: conditions),
                         e => { });
                 }
@@ -814,26 +804,10 @@ namespace Azure.Storage.Files.DataLake.Tests
             using (GetNewFile(out DataLakeFileClient fileClient))
             {
                 // Act
-                Response<PathInfo> response = await fileClient.SetPermissionsAsync(permissions: "0777");
+                Response<PathInfo> response = await fileClient.SetPermissionsAsync(permissions: PathPermissions);
 
                 // Assert
                 AssertValidStoragePathInfo(response);
-            }
-        }
-
-        [Test]
-        public async Task SetPermissionsAsync_Error()
-        {
-            using (GetNewFile(out DataLakeFileClient fileClient))
-            {
-                // Act
-                await TestHelper.AssertExpectedExceptionAsync<RequestFailedException>(
-                    fileClient.SetPermissionsAsync(permissions: "asdf"),
-                    e =>
-                    {
-                        Assert.AreEqual("InvalidPermission", e.ErrorCode);
-                        Assert.AreEqual("The permission value is invalid.", e.Message.Split('\n')[0]);
-                    });
             }
         }
 
@@ -856,7 +830,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
                     // Act
                     Response<PathInfo> response = await file.SetPermissionsAsync(
-                        permissions: "0777",
+                        permissions: PathPermissions,
                         conditions: conditions);
 
                     // Assert
@@ -882,7 +856,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                     // Act
                     await TestHelper.AssertExpectedExceptionAsync<RequestFailedException>(
                         file.SetPermissionsAsync(
-                            permissions: "0777",
+                            permissions: PathPermissions,
                             conditions: conditions),
                         e => { });
                 }
