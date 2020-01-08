@@ -5,8 +5,6 @@ jobs:
     pool:
       vmImage: windows-2019
     steps:
-      - checkout: self
-        path: SourceDirWith49CharsLengthTestForLongPaths
       - pwsh: |
           echo "##vso[build.addbuildtag]Scheduled"
         displayName: "Tag scheduled builds"
@@ -40,6 +38,7 @@ jobs:
         parameters:
           ServiceDirectory: ${{parameters.ServiceDirectory}}
           Artifacts: ${{parameters.Artifacts}}
+          DocGenerationDir: "$(Build.SourcesDirectory)/doc/ApiDocGeneration"
   - job: "Analyze"
     condition: ne(variables['Skip.Analyze'], true)
     variables:
@@ -49,8 +48,6 @@ jobs:
     pool:
       vmImage: "windows-2019"
     steps:
-      - checkout: self
-        path: SourceDirWith49CharsLengthTestForLongPaths
       - task: UsePythonVersion@0
         displayName: "Use Python 3.6"
         inputs:
@@ -85,7 +82,8 @@ jobs:
         condition: and(succeededOrFailed(), ne(variables['Build.Reason'],'PullRequest'))
       - task: NodeTool@0
         inputs:
-          versionSpec: '12.x'
+          # AutoRest doesn't work with versions 12.x
+          versionSpec: '10.15.0'
         displayName: 'Install NodeJS'
       - task: PowerShell@2
         displayName: "Verify generated code"
@@ -93,7 +91,6 @@ jobs:
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
           DOTNET_CLI_TELEMETRY_OPTOUT: 1
           DOTNET_MULTILEVEL_LOOKUP: 0
-          NODE_OPTIONS: "--max-old-space-size=4096" 
         inputs:
           filePath: "eng/CodeChecks.ps1"
           pwsh: true
@@ -119,6 +116,11 @@ jobs:
           OSName: "Windows"
           OSVmImage: "windows-2019"
           TestTargetFramework: netcoreapp2.1
+        Windows_NetCoreApp_ProjectReferences:
+          OSName: "Windows"
+          OSVmImage: "windows-2019"
+          TestTargetFramework: netcoreapp2.1
+          ConvertToProjectReferenceOption: /p:UseProjectReferenceToAzureClients=true
         Windows_NetFramework:
           OSName: "Windows"
           OSVmImage: "windows-2019"
@@ -130,8 +132,6 @@ jobs:
     pool:
       vmImage: "$(OSVmImage)"
     steps:
-      - checkout: self
-        path: SourceDirWith49CharsLengthTestForLongPaths
       - template: eng/pipelines/templates/scripts/verify-agent-os.yml@azure-sdk-tools
         parameters:
           OSName: $(OSName)
@@ -147,14 +147,14 @@ jobs:
           version: "$(DotNetCoreSDKVersion)"
       - script: >-
           dotnet test eng/service.proj --filter TestCategory!=Live --framework $(TestTargetFramework) --logger "trx;LogFileName=$(TestTargetFramework).trx"
-          /p:ServiceDirectory=${{ parameters.ServiceDirectory }} /p:IncludeSrc=false /p:IncludeSamples=false /p:Configuration=$(BuildConfiguration)
+          /p:ServiceDirectory=${{ parameters.ServiceDirectory }} /p:IncludeSrc=false /p:IncludeSamples=false /p:Configuration=$(BuildConfiguration) $(ConvertToProjectReferenceOption)
         displayName: "Build & Test ($(TestTargetFramework))"
         env:
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
           DOTNET_CLI_TELEMETRY_OPTOUT: 1
           DOTNET_MULTILEVEL_LOOKUP: 0
       - task: PublishTestResults@2
-        condition: succeededOrFailed()
+        condition: always()
         displayName: "Publish Results ($(TestTargetFramework))"
         inputs:
           testResultsFiles: "**/$(TestTargetFramework)*.trx"

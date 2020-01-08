@@ -2,12 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
@@ -90,6 +86,7 @@ namespace Azure.Storage.Blobs
         /// A <see cref="Uri"/> referencing the blob that includes the
         /// name of the account, the name of the container, and the name of
         /// the blob.
+        /// This is likely to be similar to "https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}".
         /// </param>
         /// <param name="options">
         /// Optional client options that define the transport pipeline
@@ -109,6 +106,7 @@ namespace Azure.Storage.Blobs
         /// A <see cref="Uri"/> referencing the blob that includes the
         /// name of the account, the name of the container, and the name of
         /// the blob.
+        /// This is likely to be similar to "https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}".
         /// </param>
         /// <param name="credential">
         /// The shared key credential used to sign requests.
@@ -131,6 +129,7 @@ namespace Azure.Storage.Blobs
         /// A <see cref="Uri"/> referencing the blob that includes the
         /// name of the account, the name of the container, and the name of
         /// the blob.
+        /// This is likely to be similar to "https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}".
         /// </param>
         /// <param name="credential">
         /// The token credential used to sign requests.
@@ -153,14 +152,18 @@ namespace Azure.Storage.Blobs
         /// A <see cref="Uri"/> referencing the blob that includes the
         /// name of the account, the name of the container, and the name of
         /// the blob.
+        /// This is likely to be similar to "https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}".
         /// </param>
         /// <param name="pipeline">
         /// The transport pipeline used to send every request.
         /// </param>
+        /// <param name="version">
+        /// The version of the service to use when sending requests.
+        /// </param>
         /// <param name="clientDiagnostics">Client diagnostics.</param>
         /// <param name="customerProvidedKey">Customer provided key.</param>
-        internal BlobClient(Uri blobUri, HttpPipeline pipeline, ClientDiagnostics clientDiagnostics, CustomerProvidedKey? customerProvidedKey)
-            : base(blobUri, pipeline, clientDiagnostics, customerProvidedKey)
+        internal BlobClient(Uri blobUri, HttpPipeline pipeline, BlobClientOptions.ServiceVersion version, ClientDiagnostics clientDiagnostics, CustomerProvidedKey? customerProvidedKey)
+            : base(blobUri, pipeline, version, clientDiagnostics, customerProvidedKey)
         {
         }
         #endregion ctors
@@ -972,7 +975,7 @@ namespace Azure.Storage.Blobs
             CancellationToken cancellationToken = default)
         {
 
-            var client = new BlockBlobClient(Uri, Pipeline, ClientDiagnostics, CustomerProvidedKey);
+            var client = new BlockBlobClient(Uri, Pipeline, Version, ClientDiagnostics, CustomerProvidedKey);
             singleUploadThreshold ??= client.BlockBlobMaxUploadBlobBytes;
             Debug.Assert(singleUploadThreshold <= client.BlockBlobMaxUploadBlobBytes);
 

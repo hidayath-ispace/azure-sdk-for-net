@@ -25,11 +25,7 @@ namespace Azure.Security.KeyVault.Secrets.Samples
         {
             // Environment variable with the Key Vault endpoint.
             string keyVaultUrl = Environment.GetEnvironmentVariable("AZURE_KEYVAULT_URL");
-            await GetSecretsAsync(keyVaultUrl);
-        }
 
-        private async Task GetSecretsAsync(string keyVaultUrl)
-        {
             var client = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
 
             string bankSecretName = $"BankAccountPassword-{Guid.NewGuid()}";
@@ -55,7 +51,6 @@ namespace Azure.Security.KeyVault.Secrets.Samples
                 }
 
                 KeyVaultSecret secretWithValue = await client.GetSecretAsync(secret.Name);
-
                 if (secretValues.ContainsKey(secretWithValue.Value))
                 {
                     Debug.WriteLine($"Secret {secretWithValue.Name} shares a value with secret {secretValues[secretWithValue.Value]}");
@@ -70,6 +65,12 @@ namespace Azure.Security.KeyVault.Secrets.Samples
 
             await foreach (SecretProperties secret in client.GetPropertiesOfSecretVersionsAsync(bankSecretName))
             {
+                // Secret versions may also be disabled if compromised and new versions generated, so skip disabled versions, too.
+                if (!secret.Enabled.GetValueOrDefault())
+                {
+                    continue;
+                }
+
                 KeyVaultSecret oldBankSecret = await client.GetSecretAsync(secret.Name, secret.Version);
                 if (newBankSecretPassword == oldBankSecret.Value)
                 {
@@ -82,7 +83,8 @@ namespace Azure.Security.KeyVault.Secrets.Samples
             DeleteSecretOperation bankSecretOperation = await client.StartDeleteSecretAsync(bankSecretName);
             DeleteSecretOperation storageSecretOperation = await client.StartDeleteSecretAsync(storageSecretName);
 
-            Task.WaitAll(
+            // You only need to wait for completion if you want to purge or recover the secret.
+            await Task.WhenAll(
                 bankSecretOperation.WaitForCompletionAsync().AsTask(),
                 storageSecretOperation.WaitForCompletionAsync().AsTask());
 
@@ -92,7 +94,7 @@ namespace Azure.Security.KeyVault.Secrets.Samples
             }
 
             // If the Key Vault is soft delete-enabled, then for permanent deletion, deleted secret needs to be purged.
-            Task.WaitAll(
+            await Task.WhenAll(
                 client.PurgeDeletedSecretAsync(bankSecretName),
                 client.PurgeDeletedSecretAsync(storageSecretName));
         }

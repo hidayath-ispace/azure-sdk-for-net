@@ -108,6 +108,7 @@ namespace Azure.Storage.Blobs.Specialized
         /// A <see cref="Uri"/> referencing the append blob that includes the
         /// name of the account, the name of the container, and the name of
         /// the blob.
+        /// This is likely to be similar to "https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}".
         /// </param>
         /// <param name="options">
         /// Optional client options that define the transport pipeline
@@ -127,6 +128,7 @@ namespace Azure.Storage.Blobs.Specialized
         /// A <see cref="Uri"/> referencing the append blob that includes the
         /// name of the account, the name of the container, and the name of
         /// the blob.
+        /// This is likely to be similar to "https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}".
         /// </param>
         /// <param name="credential">
         /// The shared key credential used to sign requests.
@@ -149,6 +151,7 @@ namespace Azure.Storage.Blobs.Specialized
         /// A <see cref="Uri"/> referencing the append blob that includes the
         /// name of the account, the name of the container, and the name of
         /// the blob.
+        /// This is likely to be similar to "https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}".
         /// </param>
         /// <param name="credential">
         /// The token credential used to sign requests.
@@ -171,14 +174,18 @@ namespace Azure.Storage.Blobs.Specialized
         /// A <see cref="Uri"/> referencing the append blob that includes the
         /// name of the account, the name of the container, and the name of
         /// the blob.
+        /// This is likely to be similar to "https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}".
         /// </param>
         /// <param name="pipeline">
         /// The transport pipeline used to send every request.
         /// </param>
+        /// <param name="version">
+        /// The version of the service to use when sending requests.
+        /// </param>
         /// <param name="clientDiagnostics">Client diagnostics.</param>
         /// <param name="customerProvidedKey">Customer provided key.</param>
-        internal AppendBlobClient(Uri blobUri, HttpPipeline pipeline, ClientDiagnostics clientDiagnostics, CustomerProvidedKey? customerProvidedKey)
-            : base(blobUri, pipeline, clientDiagnostics, customerProvidedKey)
+        internal AppendBlobClient(Uri blobUri, HttpPipeline pipeline, BlobClientOptions.ServiceVersion version, ClientDiagnostics clientDiagnostics, CustomerProvidedKey? customerProvidedKey)
+            : base(blobUri, pipeline, version, clientDiagnostics, customerProvidedKey)
         {
         }
         #endregion ctors
@@ -199,7 +206,7 @@ namespace Azure.Storage.Blobs.Specialized
         public new AppendBlobClient WithSnapshot(string snapshot)
         {
             var builder = new BlobUriBuilder(Uri) { Snapshot = snapshot };
-            return new AppendBlobClient(builder.ToUri(), Pipeline, ClientDiagnostics, CustomerProvidedKey);
+            return new AppendBlobClient(builder.ToUri(), Pipeline, Version, ClientDiagnostics, CustomerProvidedKey);
         }
 
         #region Create
@@ -477,13 +484,12 @@ namespace Azure.Storage.Blobs.Specialized
                     $"{nameof(conditions)}: {conditions}");
                 try
                 {
-                    BlobErrors.VerifyHttpsCustomerProvidedKey(Uri, CustomerProvidedKey);
-
                     return await BlobRestClient.AppendBlob.CreateAsync(
                         ClientDiagnostics,
                         Pipeline,
                         Uri,
                         contentLength: default,
+                        version: Version.ToVersionString(),
                         blobContentType: httpHeaders?.ContentType,
                         blobContentEncoding: httpHeaders?.ContentEncoding,
                         blobContentLanguage: httpHeaders?.ContentLanguage,
@@ -694,39 +700,27 @@ namespace Azure.Storage.Blobs.Specialized
                     BlobErrors.VerifyHttpsCustomerProvidedKey(Uri, CustomerProvidedKey);
 
                     content = content.WithNoDispose().WithProgress(progressHandler);
-                    var appendAttempt = 0;
-                    return await ReliableOperation.DoSyncOrAsync(
-                        async,
-                        reset: () => content.Seek(0, SeekOrigin.Begin),
-                        predicate: e => true,
-                        maximumRetries: Constants.MaxReliabilityRetries,
-                        operation:
-                            () =>
-                            {
-                                Pipeline.LogTrace($"Append attempt {++appendAttempt}");
-                                return BlobRestClient.AppendBlob.AppendBlockAsync(
-                                    ClientDiagnostics,
-                                    Pipeline,
-                                    Uri,
-                                    body: content,
-                                    contentLength: content.Length,
-                                    transactionalContentHash: transactionalContentHash,
-                                    leaseId: conditions?.LeaseId,
-                                    maxSize: conditions?.IfMaxSizeLessThanOrEqual,
-                                    encryptionKey: CustomerProvidedKey?.EncryptionKey,
-                                    encryptionKeySha256: CustomerProvidedKey?.EncryptionKeyHash,
-                                    encryptionAlgorithm: CustomerProvidedKey?.EncryptionAlgorithm,
-                                    appendPosition: conditions?.IfAppendPositionEqual,
-                                    ifModifiedSince: conditions?.IfModifiedSince,
-                                    ifUnmodifiedSince: conditions?.IfUnmodifiedSince,
-                                    ifMatch: conditions?.IfMatch,
-                                    ifNoneMatch: conditions?.IfNoneMatch,
-                                    async: async,
-                                    operationName: "Azure.Storage.Blobs.Specialized.AppendBlobClient.AppendBlock",
-                                    cancellationToken: cancellationToken);
-                            },
-                        cleanup: () => { })
-                        .ConfigureAwait(false);
+                    return await BlobRestClient.AppendBlob.AppendBlockAsync(
+                        ClientDiagnostics,
+                        Pipeline,
+                        Uri,
+                        body: content,
+                        contentLength: content.Length,
+                        version: Version.ToVersionString(),
+                        transactionalContentHash: transactionalContentHash,
+                        leaseId: conditions?.LeaseId,
+                        maxSize: conditions?.IfMaxSizeLessThanOrEqual,
+                        encryptionKey: CustomerProvidedKey?.EncryptionKey,
+                        encryptionKeySha256: CustomerProvidedKey?.EncryptionKeyHash,
+                        encryptionAlgorithm: CustomerProvidedKey?.EncryptionAlgorithm,
+                        appendPosition: conditions?.IfAppendPositionEqual,
+                        ifModifiedSince: conditions?.IfModifiedSince,
+                        ifUnmodifiedSince: conditions?.IfUnmodifiedSince,
+                        ifMatch: conditions?.IfMatch,
+                        ifNoneMatch: conditions?.IfNoneMatch,
+                        async: async,
+                        operationName: "Azure.Storage.Blobs.Specialized.AppendBlobClient.AppendBlock",
+                        cancellationToken: cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -954,8 +948,6 @@ namespace Azure.Storage.Blobs.Specialized
                     $"{nameof(conditions)}: {conditions}");
                 try
                 {
-                    BlobErrors.VerifyHttpsCustomerProvidedKey(Uri, CustomerProvidedKey);
-
                     return await BlobRestClient.AppendBlob.AppendBlockFromUriAsync(
                         ClientDiagnostics,
                         Pipeline,
@@ -964,6 +956,7 @@ namespace Azure.Storage.Blobs.Specialized
                         sourceRange: sourceRange.ToString(),
                         sourceContentHash: sourceContentHash,
                         contentLength: default,
+                        version: Version.ToVersionString(),
                         encryptionKey: CustomerProvidedKey?.EncryptionKey,
                         encryptionKeySha256: CustomerProvidedKey?.EncryptionKeyHash,
                         encryptionAlgorithm: CustomerProvidedKey?.EncryptionAlgorithm,
@@ -1021,6 +1014,7 @@ namespace Azure.Storage.Blobs.Specialized
             new AppendBlobClient(
                 client.Uri.AppendToPath(blobName),
                 client.Pipeline,
+                client.Version,
                 client.ClientDiagnostics,
                 client.CustomerProvidedKey);
     }
